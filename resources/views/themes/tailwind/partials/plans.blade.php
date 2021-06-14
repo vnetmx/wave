@@ -21,7 +21,7 @@
                 <div class="relative px-10 pt-0 pb-12 mt-auto text-gray-700 rounded-b-lg">
 
                     <ul class="flex flex-col space-y-2.5">
-                        @foreach($plan->features as $feature)
+                        @foreach($plan->plan_features as $feature)
                             <li class="relative">
                                 <span class="flex items-center">
                                     <svg class="w-4 h-4 mr-3 text-green-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
