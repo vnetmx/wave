@@ -1,7 +1,5 @@
 <div class="flex flex-wrap mx-auto mt-12 max-w-7xl">
     @foreach(Wave\Plan::all() as $plan)
-        @php $features = explode(',', $plan->features); @endphp
-
         <div class="w-full max-w-md px-0 mx-auto mb-6 lg:w-1/3 lg:px-3 lg:mb-0">
             <div class="relative flex flex-col h-full mb-10 bg-white border border-gray-200 rounded-lg shadow-xl border-b-none sm:mb-0">
                 <div class="px-10 pt-7">
@@ -23,7 +21,7 @@
                 <div class="relative px-10 pt-0 pb-12 mt-auto text-gray-700 rounded-b-lg">
 
                     <ul class="flex flex-col space-y-2.5">
-                        @foreach($features as $feature)
+                        @foreach($plan->features as $feature)
                             <li class="relative">
                                 <span class="flex items-center">
                                     <svg class="w-4 h-4 mr-3 text-green-500 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">

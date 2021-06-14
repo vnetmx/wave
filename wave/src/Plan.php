@@ -20,4 +20,9 @@ class Plan extends Model
     public function role() {
         return $this->belongsTo(Role::class);
     }
+
+    public function getFeaturesAttribute($value)
+    {
+        return explode(',', $value);
+    }
 }
