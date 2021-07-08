@@ -15,7 +15,7 @@ class CreatePagesTable extends Migration
     {
         // Create table for storing roles
         Schema::create('pages', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->integer('author_id');
             $table->string('title');
             $table->text('excerpt')->nullable();

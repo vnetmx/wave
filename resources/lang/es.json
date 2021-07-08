@@ -1,0 +1,5 @@
+{
+    "The expiration date of the card is prior to the current date." : "La fecha de la tarjeta ha expirado.",
+    "The card number verification digit is invalid" : "El número de tarjeta es inválido.",
+    "The CVV2 security code is required" : "El código de seguridad CVV2 es requerido."
+}

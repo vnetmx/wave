@@ -40,15 +40,27 @@
 
                         <div class="panel-body">
                             <div class="form-group">
-                                <label for="name">{{ __('voyager::generic.name') }}</label>
+                                <label for="name">{{ __('voyager.generic.name') }}</label>
                                 <input type="text" class="form-control" id="name" name="name" placeholder="{{ __('voyager::generic.name') }}"
                                        value="@if(isset($dataTypeContent->name)){{ $dataTypeContent->name }}@endif">
                             </div>
 
                             <div class="form-group">
-                                <label for="email">{{ __('voyager::generic.email') }}</label>
+                                <label for="name">{{ __('voyager.generic.last_name') }}</label>
+                                <input type="text" class="form-control" id="last_name" name="last_name" placeholder="{{ __('voyager::generic.last_name') }}"
+                                       value="@if(isset($dataTypeContent->last_name)){{ $dataTypeContent->last_name }}@endif">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">{{ __('voyager.generic.email') }}</label>
                                 <input type="email" class="form-control" id="email" name="email" placeholder="{{ __('voyager::generic.email') }}"
                                        value="@if(isset($dataTypeContent->email)){{ $dataTypeContent->email }}@endif">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone">{{ __('voyager.generic.phone') }}</label>
+                                <input class="form-control" id="phone" name="phone" placeholder="XXXXXXXXXX"
+                                       type="text">
                             </div>
 
                             <div class="form-group">
@@ -58,10 +70,10 @@
                             </div>
 
                             <div class="form-group">
-                                <label for="password">{{ __('voyager::generic.password') }}</label>
+                                <label for="password">{{ __('voyager.generic.password') }}</label>
                                 @if(isset($dataTypeContent->password))
                                     <br>
-                                    <small>{{ __('voyager::profile.password_hint') }}</small>
+                                    <small>{{ __('voyager.profile.password_hint') }}</small>
                                 @endif
                                 <input type="password" class="form-control" id="password" name="password" value="" autocomplete="new-password">
                             </div>
@@ -79,7 +91,7 @@
                                 @endphp
 
                                 <div class="form-group">
-                                    <label for="role_id">Primary Role</label>
+                                    <label for="role_id">{{__('voyager.profile.primary_role')}}</label>
                                     @php $roles = TCG\Voyager\Models\Role::all(); @endphp
                                     <select name="role_id" id="role_id" class="select2" placeholder="">
                                         @foreach($roles as $role)

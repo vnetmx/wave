@@ -14,12 +14,12 @@ class CreateSubscriptionsTable extends Migration {
 	{
 		Schema::create('subscriptions', function(Blueprint $table)
 		{
-			$table->increments('id');
-			$table->integer('user_id')->unsigned();
+			$table->id();
+			$table->unsignedBigInteger('user_id');
 			$table->string('name');
 			$table->string('stripe_id');
 			$table->string('stripe_plan');
-			$table->integer('quantity');
+			$table->unsignedInteger('quantity');
 			$table->dateTime('trial_ends_at')->nullable();
 			$table->dateTime('ends_at')->nullable();
 			$table->timestamps();

@@ -14,9 +14,9 @@ class CreatePlansTable extends Migration {
 	{
 		Schema::create('plans', function(Blueprint $table)
 		{
-			$table->increments('id');
+			$table->id();
 			$table->string('name');
-			$table->text('description', 65535)->nullable();
+			$table->text('description')->nullable();
 			$table->string('features');
 			$table->string('plan_id')->default('');
 			$table->bigInteger('role_id')->unsigned()->index('plans_role_id_foreign');

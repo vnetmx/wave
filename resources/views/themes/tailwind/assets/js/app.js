@@ -134,3 +134,28 @@ window.switchPlans = function(plan_id, plan_name){
 
 
 /********** Switch Plans Button Click ***********/
+
+/********** Alpine Modal Plans ******************/
+window.AlpineModalPlans = function()
+{
+    return {
+        open: false,
+        init() {
+            window.addEventListener("alpine-modal-plans", (event) => {
+                AlpineModalVanilla(event.detail.plan_id);
+            });
+        },
+        toggleModal() {
+            this.open = !this.open;
+        },
+        showMsg(msg) {
+            console.log('From ShowMsg: ' + msg);
+            this.toggleModal();
+        },
+        selectProduct(id,type)
+        {
+            Livewire.emit('setProduct', id, type);
+            this.toggleModal();
+        }
+    }
+}

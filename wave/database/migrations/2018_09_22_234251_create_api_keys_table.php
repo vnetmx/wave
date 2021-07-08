@@ -14,8 +14,8 @@ class CreateApiKeysTable extends Migration {
 	{
 		Schema::create('api_keys', function(Blueprint $table)
 		{
-			$table->increments('id');
-			$table->integer('user_id')->unsigned();
+			$table->id();
+			$table->unsignedBigInteger('user_id')->unsigned();
 			$table->string('name');
 			$table->string('key', 60)->default('')->unique('api_tokens_token_unique');
 			$table->dateTime('last_used_at')->nullable();

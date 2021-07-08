@@ -14,10 +14,10 @@ class CreateVoyagerThemeOptionsTable extends Migration {
 	{
 		Schema::create('voyager_theme_options', function(Blueprint $table)
 		{
-			$table->increments('id');
-			$table->integer('theme_id')->unsigned()->index();
+			$table->id();
+			$table->unsignedBigInteger('theme_id')->index();
 			$table->string('key');
-			$table->text('value', 65535)->nullable();
+			$table->text('value')->nullable();
 			$table->timestamps();
 		});
 	}

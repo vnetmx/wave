@@ -211,7 +211,7 @@
 @if(!auth()->guest() && auth()->user()->hasAnnouncements())
     @include('theme::partials.announcements')
 @endif
-
+@livewireScripts
 <!-- Scripts -->
 <script src="{{ asset('themes/' . $theme->folder . '/js/app.js') }}"></script>
 

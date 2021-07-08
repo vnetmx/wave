@@ -14,9 +14,9 @@ class CreateWaveKeyValuesTable extends Migration {
 	{
 		Schema::create('wave_key_values', function(Blueprint $table)
 		{
-			$table->increments('id');
+			$table->id();
 			$table->string('type');
-			$table->integer('keyvalue_id')->unsigned();
+			$table->unsignedInteger('keyvalue_id');
 			$table->string('keyvalue_type');
 			$table->string('key');
 			$table->string('value');

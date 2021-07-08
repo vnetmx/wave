@@ -51,6 +51,7 @@ return [
         'keep_sidebar_open'      => '¡Yarr! ¡Suelta las anclas! (Y mantén la barra lateral abierta) ',
         'key'                    => 'Clave',
         'last_modified'          => 'Última modificación',
+        'last_name'              => 'Apellidos',
         'length'                 => 'Longitud',
         'login'                  => 'Iniciar sesión',
         'media'                  => 'Medios',
@@ -107,6 +108,7 @@ return [
         'password'      => 'Contraseña',
         'password_hint' => 'Dejar vacío para mantener el mismo',
         'role'          => 'Rol',
+        'primary_role'  => 'Rol primario',
         'user_role'     => 'Rol del usuario',
     ],
     'settings' => [

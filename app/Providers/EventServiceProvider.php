@@ -2,8 +2,14 @@
 
 namespace App\Providers;
 
+use App\Events\AddressUpdated;
+use App\Listeners\CustomerDeletedFromAdmin;
+use App\Listeners\OpenpayAddressUpdated;
+use App\Listeners\OpenpayUserCreation;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use TCG\Voyager\Events\BreadDataDeleted;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -13,9 +19,17 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'App\Events\Event' => [
-            'App\Listeners\EventListener',
+        Registered::class => [
+            OpenpayUserCreation::class
         ],
+        AddressUpdated::class => [
+            OpenpayAddressUpdated::class
+        ],
+        /*
+        BreadDataDeleted::class => [
+            CustomerDeletedFromAdmin::class
+        ],
+        */
     ];
 
     /**

@@ -9,6 +9,7 @@ use App\Payments\PaymentInterface;
 use App\Services\OpenpayService;
 use App\Services\UserService;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,6 +27,8 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment() == 'production') {
             $this->app['request']->server->set('HTTPS', true);
         }
+
+        Schema::defaultStringLength(191);
 
         $service = config('payments.default');
         View::share('payment_head_js', $service::getHeadJS());

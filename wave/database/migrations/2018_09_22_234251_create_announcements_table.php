@@ -14,10 +14,10 @@ class CreateAnnouncementsTable extends Migration {
 	{
 		Schema::create('announcements', function(Blueprint $table)
 		{
-			$table->increments('id');
+			$table->id();
 			$table->string('title')->default('');
 			$table->string('description');
-			$table->text('body', 65535);
+			$table->text('body');
 			$table->timestamps();
 		});
 	}

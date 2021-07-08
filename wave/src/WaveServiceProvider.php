@@ -6,6 +6,7 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
 use Wave\Facades\Wave as WaveFacade;
 use Wave\TokenGuard;
 use Illuminate\Database\Eloquent\Relations\Relation;
@@ -144,8 +145,9 @@ class WaveServiceProvider extends ServiceProvider
         });
 
 
-        Blade::directive('waveCheckout', function(){
-            return '{!! view("wave::checkout")->render() !!}';
+        Blade::directive('waveCheckout', function($gateway=''){
+            $gw = config('payments.'  . Str::of($gateway)->replace("'", ''), config('payments.default'));
+            return '{!! ' . $gw . '::instance()->render() !!}';
         });
 
     }

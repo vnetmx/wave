@@ -14,7 +14,7 @@ class CreateVoyagerThemesTable extends Migration {
 	{
 		Schema::create('voyager_themes', function(Blueprint $table)
 		{
-			$table->increments('id');
+			$table->id();
 			$table->string('name');
 			$table->string('folder')->unique();
 			$table->boolean('active')->default(0);

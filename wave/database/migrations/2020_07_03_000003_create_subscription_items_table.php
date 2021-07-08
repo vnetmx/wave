@@ -14,7 +14,7 @@ class CreateSubscriptionItemsTable extends Migration
     public function up()
     {
         Schema::create('subscription_items', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->id();
             $table->unsignedBigInteger('subscription_id');
             $table->string('stripe_id')->index();
             $table->string('stripe_plan');

@@ -47,7 +47,7 @@
                                 @subscriber
                                     Switch Plans
                                 @notsubscriber
-                                    Get Started
+                                   <button x-data @click="$dispatch('alpine-modal-plans', {plan_id:'{{ $plan->plan_id }}'})">{{ __('Get Started') }}</button>
                                 @endsubscriber
                             @endsubscribed
                         </div>

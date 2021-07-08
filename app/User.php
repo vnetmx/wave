@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Traits\OpenpayTrait;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use \Storage;
@@ -9,7 +10,7 @@ use \Storage;
 class User extends \Wave\User
 {
 
-    use Notifiable;
+    use Notifiable, OpenpayTrait;
 
     /**
      * The attributes that are mass assignable.
@@ -17,7 +18,7 @@ class User extends \Wave\User
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'username', 'password', 'verification_code', 'verified', 'trial_ends_at'
+        'name', 'last_name', 'email', 'username', 'phone', 'password', 'verification_code', 'verified', 'trial_ends_at'
     ];
 
     protected $dates = [
@@ -34,5 +35,10 @@ class User extends \Wave\User
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function address()
+    {
+        return $this->hasOne(Address::class);
+    }
 
 }

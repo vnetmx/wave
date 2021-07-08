@@ -44,6 +44,9 @@
 
     <!-- Styles -->
     <link href="{{ asset('themes/' . $theme->folder . '/css/app.css') }}" rel="stylesheet">
+
+    {!! $payment_head_js !!}
+    @livewireStyles
 </head>
 <body class="flex flex-col min-h-screen @if(Request::is('/')){{ 'bg-white' }}@else{{ 'bg-gray-50' }}@endif @if(config('wave.dev_bar')){{ 'pb-10' }}@endif">
 
@@ -81,6 +84,5 @@
         <script>setTimeout(function(){ popToast("{{ session('message_type') }}", "{{ session('message') }}"); }, 10);</script>
     @endif
     @waveCheckout
-
 </body>
 </html>
