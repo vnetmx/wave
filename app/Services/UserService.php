@@ -7,13 +7,13 @@ namespace App\Services;
 use App\Address;
 use App\Events\AddressUpdated;
 use App\User;
+use Exception;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use TCG\Voyager\Models\Role;
 use Wave\Notifications\VerifyEmail;
-use function PHPUnit\Framework\isInstanceOf;
 
 /**
  * @property bool|null verify_email
@@ -42,10 +42,20 @@ class UserService
         return (bool)$this->verify_email;
     }
 
+    /**
+     * @throws Exception
+     */
     public function create(array $data) : User
     {
 
-        $role = \TCG\Voyager\Models\Role::where('name', '=', $this->defaultRole)->first();
+        if(!isset($data['role_id'])) {
+            try {
+                $role = Role::where('name', '=', $this->defaultRole)->first();
+            } catch (ModelNotFoundException $e)
+            {
+                throw new Exception("El Rol solicitado para la creación del usuario no existe.");
+            }
+        }
 
         if (isset($data['username']) && !empty($data['username'])) {
             $username = $data['username'];
@@ -60,7 +70,7 @@ class UserService
             'username' => $username,
             'password' => Hash::make($data['password']),
             'phone' => $data['phone'] ?? '',
-            'role_id' => $role->id,
+            'role_id' => $data['role_id'] ?? $role->id,
             'verification_code' => $this->verifiable() ? Str::random(30) : NULL,
             'verified' => ! $this->verifiable(),
             'trial_ends_at' => intval($this->trialDays) > 0 ? now()->addDays($this->trialDays) : null
@@ -87,7 +97,7 @@ class UserService
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function updateAddress($data, User $user)
     {
@@ -111,7 +121,7 @@ class UserService
             );
         } catch(ModelNotFoundException $e)
         {
-            throw new \Exception($e->getMessage());
+            throw new Exception($e->getMessage());
         }
 
         event(new AddressUpdated($user, $data));
