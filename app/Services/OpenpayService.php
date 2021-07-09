@@ -61,11 +61,11 @@ class OpenpayService
      */
     public function deleteCustomer(User $user)
     {
-        $customer = $this->getIfExists($user);
-        if ($customer !== null) {
-            return $customer->delete();
+        try {
+            return $this->getIfExists($user)->delete();
+        } catch (OpenpayCustomerNotFound $e) {
+            Log::info("User " . $user->email . " not found on Openpaypal <-> DB");
         }
-
         return null;
     }
 
