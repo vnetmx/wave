@@ -4,13 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Services\UserService;
 use App\User;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Auth\Events\Registered;
-use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Notification;
-use Carbon\Carbon;
 
 class RegisterController extends \Wave\Http\Controllers\Auth\RegisterController
 {
@@ -18,7 +12,7 @@ class RegisterController extends \Wave\Http\Controllers\Auth\RegisterController
      * Create a new user instance after a valid registration.
      *
      * @param  array  $data
-     * @return \App\User
+     * @return User
      */
     public function create(array $data) : User
     {
@@ -33,7 +27,7 @@ class RegisterController extends \Wave\Http\Controllers\Auth\RegisterController
      */
     public function register(Request $request)
     {
-        $data = $request->all();
+        $data = $request->except(['role_id']);
 
         $this->validator($data)->validate();
 
