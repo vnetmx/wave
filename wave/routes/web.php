@@ -41,6 +41,7 @@ Route::group(['middleware' => 'auth'], function(){
 
 	Route::post('settings/profile', '\Wave\Http\Controllers\SettingsController@profilePut')->name('wave.settings.profile.put');
 	Route::put('settings/security', '\Wave\Http\Controllers\SettingsController@securityPut')->name('wave.settings.security.put');
+	Route::put('settings/address/update', '\Wave\Http\Controllers\SettingsController@addressUpdatePut')->name('wave.settings.address-update.put');
 
 	Route::post('settings/api', '\Wave\Http\Controllers\SettingsController@apiPost')->name('wave.settings.api.post');
 	Route::put('settings/api/{id?}', '\Wave\Http\Controllers\SettingsController@apiPut')->name('wave.settings.api.put');

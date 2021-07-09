@@ -1,5 +1,21 @@
 {
     "The expiration date of the card is prior to the current date." : "La fecha de la tarjeta ha expirado.",
     "The card number verification digit is invalid" : "El número de tarjeta es inválido.",
-    "The CVV2 security code is required" : "El código de seguridad CVV2 es requerido."
+    "The CVV2 security code is required" : "El código de seguridad CVV2 es requerido.",
+    "Line1" : "Calle y Número",
+    "Line2" : "Colonia o Fraccionamiento",
+    "Line3" : "Localidad/Delegación",
+    "City" : "Ciudad",
+    "State" : "Estado",
+    "Country" : "Pais",
+    "Postal Code" : "Código Postal",
+    "Update" : "Actualizar",
+    "Save" : "Guardar",
+    "Name" : "Nombre",
+    "Email Address": "Correo Electrónico",
+    "Company" : "Compañía",
+    "About" : "Acerca de",
+    "Position and resize your photo" : "Posiciona y cambia el tamaño de tu foto",
+    "Cancel" : "Cancelar",
+    "Apply" : "Aplicar"
 }

@@ -36,9 +36,47 @@ class User extends \Wave\User
         'password', 'remember_token',
     ];
 
+    public function getRfcAttribute()
+    {
+        return $this->keyValue('rfc')->value ?? '';
+    }
+
+    public function getCompanyAttribute()
+    {
+        return $this->keyValue('company')->value ?? '';
+    }
+
+    protected function setMorphValue($field, $value)
+    {
+        $attr = $this->keyValue($field);
+        $attr->value = $value;
+        $attr->save();
+    }
+
+    public function setRfcAttribute($value)
+    {
+        $this->setMorphValue('rfc', $value);
+    }
+
+    public function setCompanyAttribute($value)
+    {
+        $this->setMorphValue('company', $value);
+    }
+
     public function address()
     {
-        return $this->hasOne(Address::class);
+        return $this->hasMany(Address::class);
     }
+
+    public function shipping()
+    {
+        return $this->hasOne(Address::class)->whereType('shipping');
+    }
+
+    public function billing()
+    {
+        return $this->hasOne(Address::class)->whereType('billing');
+    }
+
 
 }

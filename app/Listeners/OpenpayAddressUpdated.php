@@ -28,6 +28,6 @@ class OpenpayAddressUpdated
      */
     public function handle(AddressUpdated $event)
     {
-        App::make(OpenpayService::class)->updateAddress($event->user);
+        App::make(OpenpayService::class)->updateAddress($event->user, $event->data);
     }
 }

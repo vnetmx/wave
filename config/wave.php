@@ -3,7 +3,9 @@
 return [
 
 	'profile_fields' => [
-		'about'
+		'about',
+        'rfc',
+        'company'
 	],
 
 	'api' => [

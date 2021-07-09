@@ -4,9 +4,12 @@
 namespace App\Services;
 
 
+use App\Exceptions\OpenpayCustomerNotFound;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 use Openpay;
+use OpenpayApiRequestError;
 use Wave\OpenpayUser;
 
 class OpenpayService
@@ -47,7 +50,7 @@ class OpenpayService
      */
     public function getCustomer(User $user)
     {
-        return $this->gw->customers->get($user->openpay->openpay_id);
+        return $this->getIfExists($user);
     }
 
     /**
@@ -58,8 +61,9 @@ class OpenpayService
      */
     public function deleteCustomer(User $user)
     {
-        if($this->exists($user)) {
-            return $this->getCustomer($user)->delete();
+        $customer = $this->getIfExists($user);
+        if ($customer !== null) {
+            return $customer->delete();
         }
 
         return null;
@@ -67,8 +71,8 @@ class OpenpayService
 
     public function listCustomers(Carbon $from = null, Carbon $to = null, $offset = 0, $limit = 5)
     {
-        if(is_null($from)) $from = Carbon::now()->firstOfMonth();
-        if(is_null($to)) $to = Carbon::now()->lastOfMonth();
+        if (is_null($from)) $from = Carbon::now()->firstOfMonth();
+        if (is_null($to)) $to = Carbon::now()->lastOfMonth();
 
         return $this->gw->customers->getList([
             'creation[gte]' => $from->toDateString(),
@@ -78,23 +82,21 @@ class OpenpayService
         ]);
     }
 
-    public function updateAddress(User $user)
+    public function updateAddress(User $user, array $data)
     {
-        $customer = $this->getCustomer($user);
-        $customer->address->line1 = $user->address->line1;
-        $customer->address->line2 = $user->address->line2;
-        $customer->address->line3 = $user->address->line3;
-        $customer->address->state = $user->address->state;
-        $customer->address->city = $user->address->city;
-        $customer->address->postal_code = $user->address->postal_code;
-        $customer->address->country_code = $user->address->country_code;
-        return $customer->save();
+        // Debido a que no hay forma de actualizar la dirección  directamente al cliente
+        // lo que haremos será borrar el cliente y volverlo a crear pero con la dirección actualizada.
+        if ($data['type'] != 'billing') return false;
+        $this->deleteCustomer($user);
+        $user->openpay()->delete();
+        return $this->createCustomer($user);
+
     }
 
     public function updateCustomer(User $user)
     {
         $this->updateProfile($user);
-        $this->updateAddress($user);
+        $this->updateAddress($user, $user->billing->attributesToArray());
         return $this->getCustomer($user);
     }
 
@@ -110,7 +112,15 @@ class OpenpayService
 
     public function createCustomer(User $user)
     {
-        if($this->exists($user)) return $this->getCustomer($user);
+        // Verificamos si el usuario tiene un OpenpayID (no debería),
+        // en caso de que lo tenga verificamos si existe en Openpay
+        // si existe entonces lo regresamos y nos brincamos el proceso
+        // de creación del usuario en openpay.
+        try {
+            return $this->getIfExists($user);
+        } catch (OpenpayCustomerNotFound $e) {
+            Log::notice('Se encontro una relación Openpay ID <-> Usuario Local pero sin existir en el API, se procede a eliminar.');
+        }
 
         $customerData = [
             'name' => $user->name,
@@ -119,37 +129,53 @@ class OpenpayService
             'phone_number' => $user->phone,
         ];
         $address = [];
-        if($user->address) {
+        if ($user->billing) {
             $address = [
                 'address' => [
-                    'line1' => $user->address->line1,
-                    'line2' => $user->address->line2,
-                    'line3' => $user->address->line3,
-                    'postal_code' => $user->address->postal_code,
-                    'state' => $user->address->state,
-                    'city' => $user->address->city,
-                    'country_code' => $user->address->country_code
+                    'line1' => $user->billing->line1,
+                    'line2' => $user->billing->line2,
+                    'line3' => $user->billing->line3,
+                    'postal_code' => $user->billing->postal_code,
+                    'state' => $user->billing->state,
+                    'city' => $user->billing->city,
+                    'country_code' => $user->billing->country_code
                 ]
             ];
         }
         $customer = $this->gw->customers->add($customerData + $address);
 
-        OpenpayUser::create([
-           'user_id' => $user->id,
-           'openpay_id' => $customer->id
-        ]);
+        OpenpayUser::updateOrCreate(
+            [
+                'user_id' => $user->id
+            ],
+            [
+                'user_id' => $user->id,
+                'openpay_id' => $customer->id
+            ]);
 
         return $customer;
     }
 
-    public function exists(User $user)
+    /**
+     * @param User $user
+     * @return mixed
+     * @throws OpenpayCustomerNotFound
+     */
+    public function getIfExists(User $user)
     {
-        if($user->openpay)
-        {
-            return true;
+        // Si tenemos una relacion de usuario <-> openpay_id en la DB
+        if ($user->openpay) {
+            // Intentamos obtener el usuario de openpay
+            try {
+                return $this->gw->customers->get($user->openpay->openpay_id);
+            } catch (OpenpayApiRequestError $e) {
+                // Si no hay un customer en openpay con el openpay_id regresamos null y
+                // editamos la base de datos para borrar esa relación.
+                $user->openpay()->delete();
+            }
         }
 
-        return false;
+        throw new OpenpayCustomerNotFound("Openpay Customer Not Found");
     }
 
 }

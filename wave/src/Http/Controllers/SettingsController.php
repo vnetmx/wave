@@ -2,11 +2,14 @@
 
 namespace Wave\Http\Controllers;
 
+use App\Rules\Rfc;
+use App\Services\UserService;
 use Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Validator;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Wave\User;
 use Wave\KeyValue;
 use Wave\ApiKey;
@@ -15,10 +18,34 @@ use TCG\Voyager\Http\Controllers\Controller;
 class SettingsController extends Controller
 {
     public function index($section = ''){
-        if(empty($section)){
+        if(empty($section) || !view()->exists("theme::settings.partials." . $section)){
             return redirect(route('wave.settings', 'profile'));
         }
     	return view('theme::settings.index', compact('section'));
+    }
+
+    public function addressUpdatePut(Request $request)
+    {
+        $request->validate([
+            'line1' => 'required|max:255|string',
+            'line2' => 'required|max:255|string',
+            'line3' => 'required|sometimes|max:255|string',
+            'city' => 'required|string|max:255',
+            'state' => 'required|string|max:255',
+            'country_code' => 'required|string|alpha|max:2',
+            'postal_code' => 'required|string|max:5',
+            'type' => ['required',Rule::in(['shipping','billing'])],
+        ]);
+
+        try {
+            app(UserService::class)->updateAddress($request->all(), auth()->user());
+        } catch(\Exception $e)
+        {
+            return back()->with(['message' => $e->getMessage(), 'message_type' => 'danger']);
+        }
+
+        return back()->with(['message' => 'Successfully updated ' . $request->type . ' address', 'message_type' => 'success']);
+
     }
 
     public function profilePut(Request $request){
@@ -26,6 +53,8 @@ class SettingsController extends Controller
             'name' => 'required|string',
             'email' => 'sometimes|required|email|unique:users,email,' . Auth::user()->id,
             'username' => 'sometimes|required|unique:users,username,' . Auth::user()->id,
+            'rfc' => ['sometimes', 'required', new Rfc()],
+            'company' => 'sometimes|required|string'
         ]);
 
     	$authed_user = auth()->user();
@@ -35,8 +64,24 @@ class SettingsController extends Controller
         if($request->avatar){
     	   $authed_user->avatar = $this->saveAvatar($request->avatar, $authed_user->username);
         }
+
+        /**
+         * Vemos los campos dinamicos permitidos en el archivo de configuración
+         * wave.php y revisamos si vienen en el Request, en caso de que esten
+         * y el usuario tenga definidos accesors (getFieldAttribute()), isset
+         * marcara true, en caso de que no, marcara false, entonces podremos
+         * guardar el valor y removerlo de nuestro request para evitar volver a
+         * guardarlo de forma dinamica.
+         */
+        foreach(config('wave.profile_fields') as $key) {
+            if (isset($request->{$key}) && isset($authed_user->{$key})) {
+                $authed_user->{$key} = $request->{$key};
+                $request->request->remove($key);
+            }
+        }
     	$authed_user->save();
 
+        //TODO: Quitar eest code ugly
     	foreach(config('wave.profile_fields') as $key){
     		if(isset($request->{$key})){
 	    		$type = $key . '_type__wave_keyvalue';
@@ -93,7 +138,7 @@ class SettingsController extends Controller
         $request->validate([
             'key_name' => 'required'
         ]);
-    
+
         $apiKey = auth()->user()->createApiKey(str_slug($request->key_name));
         if(isset($apiKey->id)){
             return back()->with(['message' => 'Successfully created new API Key', 'message_type' => 'success']);

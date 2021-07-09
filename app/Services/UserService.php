@@ -8,6 +8,7 @@ use App\Address;
 use App\Events\AddressUpdated;
 use App\User;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -85,27 +86,35 @@ class UserService
         return $user . uniqid();
     }
 
+    /**
+     * @throws \Exception
+     */
     public function updateAddress($data, User $user)
     {
-        $user->address()->associate(Address::updateOrCreate(
-            [
-            'user_id' => $user->id
-            ],
-            [
-                'user_id' => $user->id,
-                'line1' => $data['line1'],
-                'line2' => $data['line2'],
-                'line3' => $data['line3'],
-                'postal_code' => $data['postal_code'],
-                'state' => $data['state'],
-                'city' => $data['city'],
-                'country_code' => $data['country_code'] ?? 'MX',
-            ])
-        );
+        try {
+            $user->address()->save(Address::updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'type' => $data['type'],
+                ],
+                [
+                    'user_id' => $user->id,
+                    'line1' => $data['line1'],
+                    'line2' => $data['line2'],
+                    'line3' => $data['line3'],
+                    'postal_code' => $data['postal_code'],
+                    'state' => $data['state'],
+                    'city' => $data['city'],
+                    'country_code' => $data['country_code'] ?? 'MX',
+                    'type' => $data['type'],
+                ])
+            );
+        } catch(ModelNotFoundException $e)
+        {
+            throw new \Exception($e->getMessage());
+        }
 
-        $user->save();
-
-        event(new AddressUpdated($user));
+        event(new AddressUpdated($user, $data));
 
         return $user;
     }
