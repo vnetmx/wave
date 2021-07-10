@@ -37,6 +37,16 @@ class UserService
         return $this->settings[$property] ?? NULL;
     }
 
+    /**
+     * @param $id
+     * @return mixed
+     * @throws ModelNotFoundException
+     */
+    public function find($id)
+    {
+        return User::findOrFail($id);
+    }
+
     public function verifiable()
     {
         return (bool)$this->verify_email;
