@@ -4,8 +4,6 @@ namespace App;
 
 use App\Traits\OpenpayTrait;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use \Storage;
 
 class User extends \Wave\User
 {
@@ -38,12 +36,12 @@ class User extends \Wave\User
 
     public function getRfcAttribute()
     {
-        return $this->keyValue('rfc')->value ?? '';
+        return $this->keyValue('rfc')->value ?? null;
     }
 
     public function getCompanyAttribute()
     {
-        return $this->keyValue('company')->value ?? '';
+        return $this->keyValue('company')->value ?? null;
     }
 
     protected function setMorphValue($field, $value)
