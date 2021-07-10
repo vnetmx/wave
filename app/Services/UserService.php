@@ -76,6 +76,14 @@ class UserService
             'trial_ends_at' => intval($this->trialDays) > 0 ? now()->addDays($this->trialDays) : null
         ]);
 
+        // Tenemos en el morph, lo del rfc y company, así que debemos guardarlo al crear el usuario si existe en el $data.
+        foreach (['rfc', 'company'] as $field)
+        {
+            if(isset($data[$field])) $user->{$field} = $data[$field];
+        }
+        $user->save();
+
+
         if ($this->verifiable()) {
             $user->notify(new VerifyEmail($user));
         }
@@ -109,12 +117,12 @@ class UserService
                 ],
                 [
                     'user_id' => $user->id,
-                    'line1' => $data['line1'],
-                    'line2' => $data['line2'],
-                    'line3' => $data['line3'],
-                    'postal_code' => $data['postal_code'],
-                    'state' => $data['state'],
-                    'city' => $data['city'],
+                    'line1' => $data['line1'] ?? '',
+                    'line2' => $data['line2'] ?? '',
+                    'line3' => $data['line3'] ?? '',
+                    'postal_code' => $data['postal_code'] ?? '',
+                    'state' => $data['state'] ?? '',
+                    'city' => $data['city'] ?? '',
                     'country_code' => $data['country_code'] ?? 'MX',
                     'type' => $data['type'],
                 ])
