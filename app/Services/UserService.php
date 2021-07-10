@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Address;
 use App\Events\AddressUpdated;
+use App\Events\UserUpdated;
 use App\User;
 use Exception;
 use Illuminate\Auth\Events\Registered;
@@ -52,17 +53,42 @@ class UserService
         return (bool)$this->verify_email;
     }
 
+    public function update(User $user, array $data)
+    {
+        collect($data)->each(/**
+         * @throws Exception
+         */ function ($item, $key) use (&$user) {
+            if (!is_array($item) && $key != "id") {
+                if ($key == "password") {
+                    $user->{$key} = Hash::make($item);
+                    return;
+                }
+                $user->{$key} = $item;
+
+                return;
+            }
+
+            if (in_array($key, ['shipping', 'billing'])) {
+                $this->updateAddress($item, $user);
+            }
+        });
+
+        $user->save();
+
+        event(new UserUpdated($user, $data));
+
+    }
+
     /**
      * @throws Exception
      */
-    public function create(array $data) : User
+    public function create(array $data): User
     {
 
-        if(!isset($data['role_id'])) {
+        if (!isset($data['role_id'])) {
             try {
                 $role = Role::where('name', '=', $this->defaultRole)->first();
-            } catch (ModelNotFoundException $e)
-            {
+            } catch (ModelNotFoundException $e) {
                 throw new Exception("El Rol solicitado para la creación del usuario no existe.");
             }
         }
@@ -82,14 +108,13 @@ class UserService
             'phone' => $data['phone'] ?? '',
             'role_id' => $data['role_id'] ?? $role->id,
             'verification_code' => $this->verifiable() ? Str::random(30) : NULL,
-            'verified' => ! $this->verifiable(),
+            'verified' => !$this->verifiable(),
             'trial_ends_at' => intval($this->trialDays) > 0 ? now()->addDays($this->trialDays) : null
         ]);
 
         // Tenemos en el morph, lo del rfc y company, así que debemos guardarlo al crear el usuario si existe en el $data.
-        foreach (['rfc', 'company'] as $field)
-        {
-            if(isset($data[$field])) $user->{$field} = $data[$field];
+        foreach (['rfc', 'company'] as $field) {
+            if (isset($data[$field])) $user->{$field} = $data[$field];
         }
         $user->save();
 
@@ -103,13 +128,13 @@ class UserService
         return $user;
     }
 
-    public function getUniqueUsernameFromEmail($email) : string
+    public function getUniqueUsernameFromEmail($email): string
     {
         $user = Str::of($email)->before('@')
-                               ->trim()
-                               ->replace('-', '_')
-                               ->replaceMatches('/[^A-Za-z0-9_]++/', '') // Lo que no sea alfanumerico o guion bajo, quitarlo.
-                               ->rtrim('_')->lower(); // no queremos que termine en _
+            ->trim()
+            ->replace('-', '_')
+            ->replaceMatches('/[^A-Za-z0-9_]++/', '') // Lo que no sea alfanumerico o guion bajo, quitarlo.
+            ->rtrim('_')->lower(); // no queremos que termine en _
 
         return $user . uniqid();
     }
@@ -137,8 +162,7 @@ class UserService
                     'type' => $data['type'],
                 ])
             );
-        } catch(ModelNotFoundException $e)
-        {
+        } catch (ModelNotFoundException $e) {
             throw new Exception($e->getMessage());
         }
 
