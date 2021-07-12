@@ -25,6 +25,7 @@ class User extends \Wave\User
         'trial_ends_at'
     ];
 
+    public $additional_attributes = ['company'];
     /**
      * The attributes that should be hidden for arrays.
      *
