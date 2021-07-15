@@ -21,7 +21,10 @@
         "laravel/tinker": "^2.0",
         "livewire/livewire": "^2.4",
         "openpay/sdk": "2.1.*",
+        "phpcfdi/cfdi-cleaner": "^1.1.1",
+        "phpcfdi/cfdi-to-json": "^0.2.1",
         "phpcfdi/rfc": "^1.1",
+        "phpcfdi/sat-ws-descarga-masiva": "^0.4.2",
         "spatie/laravel-ray": "^1.17",
         "tcg/voyager": "1.4.x-dev",
         "tymon/jwt-auth": "dev-develop"

@@ -112,3 +112,25 @@ if(!function_exists('tailwindPlanColor')){
 	}
 
 }
+
+if (!function_exists('array_base')) {
+    function array_base(array $array, $key = NULL, $prefix = true)
+    {
+        $return = [];
+        if (isset($key) || !empty(trim($key))) {
+            if (!array_key_exists($key, $array) || !is_array($array[$key])) {
+                return [];
+            }
+
+            $array = $array[$key];
+        }
+
+        if (!$prefix) $key = '';
+
+        foreach ($array as $k => $v) {
+            if (is_array($v)) continue;
+            $return[$key . $k] = $v;
+        }
+        return $return;
+    }
+}
