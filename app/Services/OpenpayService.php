@@ -8,6 +8,7 @@ use App\Exceptions\OpenpayCustomerNotFound;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Openpay;
 use OpenpayApiRequestError;
 use Wave\OpenpayUser;
@@ -21,6 +22,13 @@ class OpenpayService
     private $merchant_id;
     private $public_key;
     private $private_key;
+
+    private $address_rules = [
+        'postal_code' => 'required|string|min:1|max:12',
+        'city' => 'required',
+        'line1' => 'required',
+        'state' => 'required',
+    ];
 
     /**
      * Crea el objeto pasando las llaves asignadas en el portal
@@ -87,6 +95,14 @@ class OpenpayService
         // Debido a que no hay forma de actualizar la dirección  directamente al cliente
         // lo que haremos será borrar el cliente y volverlo a crear pero con la dirección actualizada.
         if ($data['type'] != 'billing') return false;
+
+        /**
+         * address.postal_code la longitud tiene que estar entre 1 y 12, address.postal_code is required, address.city
+         * is required, address.line1 is required, address.state is required
+         *
+         * If fails the validation let dont to anything.
+         */
+        if(Validator::make($data,$this->address_rules)->fails()) return false;
         $this->deleteCustomer($user);
         $user->openpay()->delete();
         return $this->createCustomer($user);

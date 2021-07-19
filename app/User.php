@@ -4,6 +4,7 @@ namespace App;
 
 use App\Traits\OpenpayTrait;
 use Illuminate\Notifications\Notifiable;
+use Wave\KeyValue;
 
 class User extends \Wave\User
 {
@@ -25,7 +26,7 @@ class User extends \Wave\User
         'trial_ends_at'
     ];
 
-    public $additional_attributes = ['company'];
+    public $additional_attributes = ['company', 'rfc'];
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -47,9 +48,22 @@ class User extends \Wave\User
 
     protected function setMorphValue($field, $value)
     {
+        if (!in_array($field, $this->additional_attributes)) return;
+
         $attr = $this->keyValue($field);
-        $attr->value = $value;
-        $attr->save();
+        if (isset($attr)) {
+            $attr->value = $value;
+            $attr->save();
+            return;
+        }
+
+        KeyValue::create([
+            'type' => 'text',
+            'keyvalue_id' => $this->id,
+            'keyvalue_type' => 'users',
+            'key' => $field,
+            'value' => $value,
+        ]);
     }
 
     public function setRfcAttribute($value)
