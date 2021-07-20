@@ -4,6 +4,7 @@ namespace App;
 
 use App\Traits\OpenpayTrait;
 use Illuminate\Notifications\Notifiable;
+use TCG\Voyager\Models\Role;
 use Wave\KeyValue;
 
 class User extends \Wave\User
@@ -17,7 +18,7 @@ class User extends \Wave\User
      * @var array
      */
     protected $fillable = [
-        'name', 'last_name', 'email', 'username', 'phone', 'password', 'verification_code', 'verified', 'trial_ends_at'
+        'name', 'last_name', 'email', 'username', 'phone', 'password', 'verification_code', 'verified', 'trial_ends_at', 'role_id'
     ];
 
     protected $dates = [
@@ -90,6 +91,12 @@ class User extends \Wave\User
     {
         return $this->hasOne(Address::class)->whereType('billing');
     }
-
+    /**
+     * The roles that belong to the user.
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class,'user_roles');
+    }
 
 }

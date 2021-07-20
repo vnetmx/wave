@@ -82,6 +82,11 @@ class VoyagerUserController extends VoyagerBaseController
         $validated = $this->doValidation($request, true, ['email', 'username']);
         // Update User with Validated Data
         app(UserService::class)->update($user, $validated);
+
+        if(isset($validated['user_belongstomany_role_relationship'] )) {
+            // Roles Add
+            $user = app(UserService::class)->updateRoles($user, $validated['user_belongstomany_role_relationship']);
+        }
         // Dispatch Event Data Updated
         event(new BreadDataUpdated($this->dataType, $validated));
 
@@ -129,6 +134,10 @@ class VoyagerUserController extends VoyagerBaseController
                 app(UserService::class)->updateAddress($validated[$addressType], $user);
             }
         }
+        if(isset($validated['user_belongstomany_role_relationship'] )) {
+            // Roles Add
+            $user = app(UserService::class)->updateRoles($user, $validated['user_belongstomany_role_relationship']);
+        }
         // Dispatch Event
         event(new BreadDataAdded($this->dataType, $user));
         // Go Away
@@ -168,6 +177,8 @@ class VoyagerUserController extends VoyagerBaseController
     {
         $sometimes = $update ? '|sometimes' : '';
         return [
+            'role_id' => 'required|exists:roles,id',
+            'user_belongstomany_role_relationship' => 'sometimes|array',
             'name' => 'required|string|max:255',
             'last_name' => 'required|sometimes|string|max:255',
             'phone' => 'required|sometimes|string|max:20',

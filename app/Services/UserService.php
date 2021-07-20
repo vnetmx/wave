@@ -10,6 +10,7 @@ use App\Events\UserUpdated;
 use App\User;
 use Exception;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -77,6 +78,25 @@ class UserService
 
         event(new UserUpdated($user, $data));
 
+    }
+
+    /**
+     * @param User $user
+     * @param array $roles
+     * @return User
+     */
+    public function updateRoles(User $user, array $roles): User
+    {
+        /** @var Collection $rolesCollection */
+        $rolesCollection = Role::whereIn('id', $roles)->get();
+        $roles = $rolesCollection->transform(function($item, $key)
+        {
+            return $item->id;
+        })->toArray();
+
+        $user->roles()->sync($roles);
+
+        return $user;
     }
 
     /**
