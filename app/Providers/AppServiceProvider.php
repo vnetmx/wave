@@ -27,7 +27,6 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment() == 'production') {
             $this->app['request']->server->set('HTTPS', true);
         }
-
         Schema::defaultStringLength(191);
 
         $service = config('payments.default');
