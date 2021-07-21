@@ -13,9 +13,9 @@ class CreatePivotTableForIncomesAndCategoriesTransactions extends Migration
      */
     public function up()
     {
-        Schema::create('income_bank_transactions_transaction_categories', function (Blueprint $table) {
+        Schema::create('bank_transactions_transaction_categories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('income_bank_transaction_id');
+            $table->foreignId('bank_transaction_id');
             $table->foreignId('transaction_category_id');
             $table->timestamps();
         });
@@ -28,6 +28,6 @@ class CreatePivotTableForIncomesAndCategoriesTransactions extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pivot_table_for_incomes_and_categories_transactions');
+        Schema::dropIfExists('bank_transactions_transaction_categories');
     }
 }

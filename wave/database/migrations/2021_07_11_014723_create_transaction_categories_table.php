@@ -18,6 +18,7 @@ class CreateTransactionCategoriesTable extends Migration
             $table->string('name');
             $table->string('color')->nullable();
             $table->string('description')->nullable();
+            $table->string('slug')->index();
             $table->timestamps();
         });
     }

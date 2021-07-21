@@ -14,10 +14,13 @@ class CreateCfdisTable extends Migration
     {
         Schema::create('cfdis', function (Blueprint $table) {
             $table->id();
+            /**
+             * Campos personalizados para uso del sistema, no pertenecen al CFDI como tal
+             */
             $table->string('file')->nullable();
-            $table->foreignId('transaction_id')->nullable();
-            $table->boolean('EstadoCfdi')->default(1); // True Vigente, False Cancelada
+            $table->foreignId('bank_transaction_id')->nullable()->constrained('bank_transactions')->nullOnDelete();
             $table->dateTime('FechaCancelacion')->nullable(); // Fecha de Cancelación en caso de Tenerla
+            $table->dateTime('FechaPago')->nullable();
             /**
              * NODO COMPROBANTE
              */
